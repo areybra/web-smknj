@@ -1,34 +1,39 @@
-# Environment variables
+# ==========================================
+# .gitignore untuk Django Project
+# Project: web-smknj-2026
+# ==========================================
+
+# ==========================================
+# ENVIRONMENT VARIABLES
+# ==========================================
 .env
 .env.local
 .env.*.local
+.env.production
 
-# Python
+# ==========================================
+# PYTHON
+# ==========================================
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-env/
-venv/
-ENV/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 
-# Django
+# ==========================================
+# VIRTUAL ENVIRONMENT
+# ==========================================
+env/
+venv/
+ENV/
+.venv/
+
+# ==========================================
+# DJANGO
+# ==========================================
 *.log
 local_settings.py
 db.sqlite3
@@ -37,18 +42,49 @@ db.sqlite3-journal
 /staticfiles
 /static_root
 
+# ==========================================
 # IDE
+# ==========================================
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
-
-# OS
 .DS_Store
-Thumbs.db
 
-# Database
+# ==========================================
+# OS
+# ==========================================
+Thumbs.db
+Desktop.ini
+
+# ==========================================
+# DATABASE BACKUPS
+# ==========================================
 *.sql
 *.sqlite
 *.db
+*.dump
+
+# ==========================================
+# DEPLOYMENT (Keep these in repo)
+# ==========================================
+# passenger_wsgi.py  - KEEP (needed for cPanel)
+# .htaccess          - KEEP (needed for Apache)
+# requirements.txt   - KEEP (needed for pip install)
+
+# ==========================================
+# SENSITIVE FILES
+# ==========================================
+# Backup files with passwords
+*password*.txt
+*secret*.txt
+*.key
+
+# ==========================================
+# UPLOADS (Optional - exclude user uploads)
+# ==========================================
+# media/uploads/
+# media/news/
+# media/staff/
+# Note: Uncomment jika tidak ingin upload files ter-commit

@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-fu*ct8a+b@1h&!0a5rx%5xsunc9e^g!hnc5g0tmdcb)%a_4fw0'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key-change-me')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['192.168.1.19', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,192.168.1.19').split(',')]
 
 
 # Application definition
@@ -38,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_cleanup.apps.CleanupConfig', 
+    'django_cleanup.apps.CleanupConfig',
     'ckeditor',
     'ckeditor_uploader',
     'otak_aplikasi',
@@ -56,10 +60,35 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'web_smknj.urls'
 
+# ==========================================
+# PRODUCTION SECURITY SETTINGS
+# ==========================================
+if not DEBUG:
+    # Security headers
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'SAMEORIGIN'
+    
+    # HTTPS settings (aktifkan jika menggunakan SSL)
+    SECURE_SSL_REDIRECT = False  # Set True jika SSL aktif
+    SESSION_COOKIE_SECURE = False  # Set True jika SSL aktif
+    CSRF_COOKIE_SECURE = False  # Set True jika SSL aktif
+    
+    # HSTS (HTTP Strict Transport Security)
+    SECURE_HSTS_SECONDS = 0  # Set 31536000 (1 year) jika SSL aktif
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+    SECURE_HSTS_PRELOAD = False
+    
+    # CSRF Trusted Origins untuk domain production
+    CSRF_TRUSTED_ORIGINS = [
+        'https://webtest.smknj.sch.id',
+        'https://www.webtest.smknj.sch.id',
+    ]
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -81,11 +110,11 @@ WSGI_APPLICATION = 'web_smknj.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'web_smknj_db',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'NAME': os.getenv('DB_NAME', 'web_smknj_db'),
+        'USER': os.getenv('DB_USER', 'root'),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '3306'),
     }
 }
 
@@ -121,14 +150,22 @@ USE_TZ = True  # PASTIKAN INI TRUE
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = "/static/"
+STATIC_URL = os.getenv('STATIC_URL', '/static/')
 STATICFILES_DIRS = [BASE_DIR / "static"]
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # untuk production
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # untuk collectstatic
 
 # Media files (User uploaded files)
-MEDIA_URL = '/media/'
+MEDIA_URL = os.getenv('MEDIA_URL', '/media/')
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# ==========================================
+# PRODUCTION MEDIA/STATIC SETTINGS (cPanel)
+# ==========================================
+# Untuk production di cPanel, sesuaikan URL dengan domain
+# Uncomment baris di bawah jika sudah production
+# if not DEBUG:
+#     STATIC_URL = 'https://webtest.smknj.sch.id/static/'
+#     MEDIA_URL = 'https://webtest.smknj.sch.id/media/'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -163,50 +200,19 @@ CKEDITOR_CONFIGS = {
     },
 }
 
+# Jazzmin Configuration - Minimal settings
 JAZZMIN_SETTINGS = {
-  "site_title": "Admin SMK Nurul Jadid",
-  "site_header": "Dashboard SMK",
-  "site_brand": "SMK NJ",
-  "site_logo": "images/logo/logo.png",
-  "welcome_sign": "Welcome to the Admin SMK Nurul Jadid",
-  "copyright": "SMK Nurul Jadid",
-  "topmenu_links": [
-    {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
-    {"app": "otak_aplikasi"},
-  ],
-  "show_ui_builder": True,
-  "custom_css": "static/css/jazzmin-custom.css",
-  "custom_js": "js/admin-hash-tabs.js",
-  "hide_apps": ["auth"],
-  "icons": {
-    "otak_aplikasi.news": "fas fa-newspaper",
-    "otak_aplikasi.newsCategory": "fas fa-tags",
-    "otak_aplikasi.Pengumuman": "fas fa-bullhorn",
-    "otak_aplikasi.categoryPengumuman": "fas fa-folder",
-    "otak_aplikasi.FilePengumuman": "fas fa-file-download",
-    "otak_aplikasi.Jurusan": "fas fa-graduation-cap",
-    "otak_aplikasi.StaffDanGuru": "fas fa-users-cog",
-    "otak_aplikasi.MataPelajaran": "fas fa-book",
-    "otak_aplikasi.ektra": "fas fa-running",
-    "otak_aplikasi.ektraCategory": "fas fa-list",
-    "otak_aplikasi.FasilitasLab": "fas fa-flask",
-    "otak_aplikasi.PeralatanLab": "fas fa-tools",
-    "otak_aplikasi.SchoolStatistics": "fas fa-chart-line",
-    "otak_aplikasi.MitraIndustri": "fas fa-handshake",
-  },
-  "order_with_respect_to": [
-    "otak_aplikasi.SchoolStatistics",
-    "otak_aplikasi.news",
-    "otak_aplikasi.newsCategory",
-    "otak_aplikasi.Pengumuman",
-    "otak_aplikasi.categoryPengumuman",
-    "otak_aplikasi.Jurusan",
-    "otak_aplikasi.StaffDanGuru",
-    "otak_aplikasi.MataPelajaran",
-    "otak_aplikasi.ektra",
-    "otak_aplikasi.ektraCategory",
-    "otak_aplikasi.FasilitasLab",
-  ],
+    "site_header": "Admin",
+    "site_brand": "Admin Panel",
+    "site_logo": "images/logo/logo.png",
+    "welcome_sign": "Welcome",
+    "copyright": "",
+    "search_model": None,
+    "user_avatar": None,
+    "topmenu_links": [
+        {"name": "Home", "url": "admin:index"},
+    ],
+    "show_ui_builder": False,
 }
 
 

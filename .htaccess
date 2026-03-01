@@ -1,0 +1,91 @@
+# ==========================================
+# .htaccess untuk Django di cPanel/Passenger
+# Domain: webtest.smknj.sch.id
+# ==========================================
+
+# Aktifkan RewriteEngine
+RewriteEngine On
+
+# ==========================================
+# SECURITY HEADERS
+# ==========================================
+# Mencegah MIME type sniffing
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# ==========================================
+# PROTECT SENSITIVE FILES
+# ==========================================
+# Blokir akses ke file sensitif
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Blokir akses ke file konfigurasi
+<FilesMatch "\.(env|git|sql|db|sqlite|pyc|pyo)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Blokir akses ke folder tersembunyi
+<IfModule mod_rewrite.c>
+    RewriteRule (^\.|/__pycache__|/env/|/venv/) - [F,L]
+</IfModule>
+
+# ==========================================
+# MEDIA & STATIC FILES CACHING
+# ==========================================
+# Enable caching untuk static files
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Images
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    
+    # CSS & JavaScript
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+    
+    # Fonts
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/ttf "access plus 1 year"
+</IfModule>
+
+# ==========================================
+# COMPRESSION (GZIP)
+# ==========================================
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# ==========================================
+# CHARACTER SET
+# ==========================================
+AddDefaultCharset UTF-8
+
+# ==========================================
+# DIRECTORY INDEX
+# ==========================================
+DirectoryIndex passenger_wsgi.py index.html index.htm
+
+# ==========================================
+# ERROR PAGES (Optional)
+# ==========================================
+# ErrorDocument 404 /404.html
+# ErrorDocument 500 /500.html

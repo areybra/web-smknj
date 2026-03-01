@@ -23,31 +23,35 @@ class MitraIndustriInline(admin.TabularInline):
 class prospekKarirInline(admin.TabularInline):
     model = ProspekKarir
     extra = 1
+
 class fasilitasJurusanInline(admin.TabularInline):
     model = FasilitasJurusan
-    extra = 1        
+    extra = 1
+
 class testimoniAlumniInline(admin.TabularInline):
     model = TestimoniAlumni
-    extra = 1        
+    extra = 1
+
 class sertifikasiInline(admin.TabularInline):
     model = Sertifikasi
-    extra = 1               
+    extra = 1
 
 class jurusanAdmin(admin.ModelAdmin):
-    inlines = [prospekKarirInline, fasilitasJurusanInline, testimoniAlumniInline, sertifikasiInline, KompetensiInline, MitraIndustriInline]     
+    inlines = [prospekKarirInline, fasilitasJurusanInline, testimoniAlumniInline, sertifikasiInline, KompetensiInline, MitraIndustriInline]
 admin.site.register(Jurusan, jurusanAdmin)
+
 
 class FilePengumumanInline(admin.TabularInline):
     model = FilePengumuman
     extra = 1
 
 class pengumumanAdmin(admin.ModelAdmin):
-    inlines = [FilePengumumanInline]    
+    inlines = [FilePengumumanInline]
     list_display = ('judul', 'category', 'penting', 'created_at', 'updated_at')
     list_filter = ('category', 'penting', 'created_at', 'updated_at')
     search_fields = ('judul', 'deskripsi')
     ordering = ('-created_at',)
-    
+
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         if not request.user.is_superuser:
@@ -56,6 +60,7 @@ class pengumumanAdmin(admin.ModelAdmin):
 
 admin.site.register(categoryPengumuman)
 admin.site.register(Pengumuman, pengumumanAdmin)
+
 
 class staffDanGuruAdmin(admin.ModelAdmin):
     list_display = ('nama', 'jabatan', 'pendidikan', 'created_at', 'updated_at')
@@ -66,6 +71,7 @@ class staffDanGuruAdmin(admin.ModelAdmin):
 
 admin.site.register(StaffDanGuru, staffDanGuruAdmin)
 admin.site.register(MataPelajaran)
+
 
 class PeralatanLabInline(admin.TabularInline):
     model = PeralatanLab
@@ -79,6 +85,7 @@ class FasilitasLabAdmin(admin.ModelAdmin):
     ordering = ('-created_at',)
 
 admin.site.register(FasilitasLab, FasilitasLabAdmin)
+
 
 class SchoolStatisticsAdmin(admin.ModelAdmin):
     list_display = ('total_siswa', 'total_instruktur', 'total_mitra', 'is_active', 'updated_at')
@@ -103,4 +110,3 @@ class SchoolStatisticsAdmin(admin.ModelAdmin):
     )
 
 admin.site.register(SchoolStatistics, SchoolStatisticsAdmin)
-
